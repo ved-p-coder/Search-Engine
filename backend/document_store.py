@@ -30,3 +30,6 @@ class DocumentStore:
 
             # Save the document's metadata and extracted text.
             self.documents[document_id] = document
+            
+            #Add the document's text to the inverted index
+            self.index.add_document(document_id, document["text"])
