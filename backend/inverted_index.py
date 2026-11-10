@@ -33,3 +33,39 @@ class InvertedIndex:
                 self.postings[term] = {}
 
             self.postings[term][document_id] = frequency
+
+    def remove_document(self, document_id: int) -> None:
+        """Remove a document and its postings from the index."""
+
+        # Remove the document's stored length, if it exists.
+        self.document_lengths.pop(document_id, None)
+
+        # Find and remove this document from every posting list.
+        for term in list(self.postings):
+            self.postings[term].pop(document_id, None)
+
+            # Delete terms that no longer appear in any document.
+            if not self.postings[term]:
+                del self.postings[term]
+
+    def get_postings(self, term: str) -> dict[int, int]:
+        #Return the documents containing a term and their frequencies.
+
+        # Normalize the search term using the shared text-processing pipeline.
+        normalized_terms = self._tokenize(term)
+
+        # This method expects one term at a time.
+        if len(normalized_terms) != 1:
+            return {}
+
+        normalized_term = normalized_terms[0]
+
+        # Return a copy so callers cannot accidentally change the index.
+        return self.postings.get(normalized_term, {}).copy()
+
+    def get_document_frequency(self, term: str) -> int:
+        #Return the number of documents containing a term
+
+        # Document frequency counts documents, not total occurrences.
+        return len(self.get_postings(term))
+
