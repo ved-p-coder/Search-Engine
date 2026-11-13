@@ -31,6 +31,20 @@ class InvertedIndex:
         for term, frequency in term_frequencies.items():
             if term not in self.postings:
                 self.postings[term] = {}
+    def remove_document(self, document_id: int) -> None:
+        """Remove a document and its postings from the index."""
+
+        # Remove the document's stored length, if it exists.
+        self.document_lengths.pop(document_id, None)
+
+        # Find and remove this document from every posting list.
+        for term in list(self.postings):
+            self.postings[term].pop(document_id, None)
+
+            # Delete terms that no longer appear in any document.
+            if not self.postings[term]:
+                del self.postings[term]
+
 
             self.postings[term][document_id] = frequency
 
