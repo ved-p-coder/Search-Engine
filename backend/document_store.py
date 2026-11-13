@@ -30,6 +30,19 @@ class DocumentStore:
 
             # Save the document's metadata and extracted text.
             self.documents[document_id] = document
-            
+
+    def search(self, term: str):
+        # Get the document IDs containing this term.
+        postings = self.index.get_postings(term)
+
+        # Return the matching document information.
+        return [
+            {
+                "id": document_id,
+                "title": self.documents[document_id]["title"],
+                "source": self.documents[document_id]["source"],
+            }
+            for document_id in postings
+        ]
             #Add the document's text to the inverted index
             self.index.add_document(document_id, document["text"])
